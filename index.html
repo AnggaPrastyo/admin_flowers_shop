@@ -1,0 +1,258 @@
+<link rel="stylesheet" href="css/style.css" />
+
+<!-- Contoh tabel produk -->
+<div class="product-management">
+  <div class="action-bar">
+    <button id="add-product-btn" class="btn-primary">Tambah Produk Baru</button>
+    <div class="search-box">
+      <input type="text" placeholder="Cari produk..." />
+      <button type="submit"><i class="bi bi-search"></i></button>
+    </div>
+  </div>
+
+  <table class="products-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Gambar</th>
+        <th>Nama Produk</th>
+        <th>Kategori</th>
+        <th>Harga</th>
+        <th>Stok</th>
+        <th>Status</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Baris produk akan ditampilkan di sini -->
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <!-- Kontrol paginasi -->
+  </div>
+</div>
+
+<!-- Form tambah/edit produk (modal) -->
+<div id="product-form-modal" class="modal">
+  <div class="modal-content">
+    <h3>Tambah Produk Baru</h3>
+    <form id="product-form">
+      <!-- Input untuk data produk -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="product-name">Nama Produk</label>
+          <input type="text" id="product-name" name="name" required />
+        </div>
+        <div class="form-group">
+          <label for="product-category">Kategori</label>
+          <select id="product-category" name="category_id" required>
+            <!-- Opsi kategori -->
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="product-price">Harga (Rp)</label>
+          <input
+            type="number"
+            id="product-price"
+            name="price"
+            min="0"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="product-stock">Stok</label>
+          <input
+            type="number"
+            id="product-stock"
+            name="stock"
+            min="0"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="product-description">Deskripsi</label>
+        <textarea
+          id="product-description"
+          name="description"
+          rows="4"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Gambar Produk</label>
+        <div class="image-upload-container">
+          <div class="image-preview">
+            <img id="image-preview" src="" alt="Preview" />
+          </div>
+          <input type="file" id="product-image" name="image" accept="image/*" />
+          <button type="button" id="upload-image-btn">Pilih Gambar</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="product-status">Status</label>
+        <select id="product-status" name="status">
+          <option value="active">Aktif</option>
+          <option value="inactive">Nonaktif</option>
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" id="cancel-product">
+          Batal
+        </button>
+        <button type="submit" class="btn-primary">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Contoh tabel pesanan -->
+<div class="order-management">
+  <div class="order-filters">
+    <select id="order-status-filter">
+      <option value="all">Semua Status</option>
+      <option value="pending">Menunggu Pembayaran</option>
+      <option value="processing">Diproses</option>
+      <option value="shipped">Dikirim</option>
+      <option value="delivered">Selesai</option>
+      <option value="cancelled">Dibatalkan</option>
+    </select>
+
+    <div class="date-range">
+      <input type="date" id="date-from" />
+      <span>hingga</span>
+      <input type="date" id="date-to" />
+      <button id="filter-date" class="btn-small">Filter</button>
+    </div>
+  </div>
+
+  <table class="orders-table">
+    <thead>
+      <tr>
+        <th>ID Pesanan</th>
+        <th>Tanggal</th>
+        <th>Pelanggan</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Pembayaran</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Baris pesanan akan ditampilkan di sini -->
+    </tbody>
+  </table>
+</div>
+
+<!-- Detail pesanan (modal) -->
+<div id="order-detail-modal" class="modal">
+  <div class="modal-content modal-lg">
+    <div class="modal-header">
+      <h3>Detail Pesanan #FS23051201</h3>
+      <button class="modal-close">&times;</button>
+    </div>
+
+    <div class="order-detail-content">
+      <div class="order-info-section">
+        <h4>Informasi Pesanan</h4>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Status:</span>
+            <select id="order-status">
+              <option value="pending">Menunggu Pembayaran</option>
+              <option value="processing">Diproses</option>
+              <option value="shipped">Dikirim</option>
+              <option value="delivered">Selesai</option>
+              <option value="cancelled">Dibatalkan</option>
+            </select>
+            <button id="update-status" class="btn-small">Update</button>
+          </div>
+
+          <div class="info-item">
+            <span class="label">Tanggal Pesanan:</span>
+            <span class="value">12 Mei 2023, 14:30</span>
+          </div>
+
+          <div class="info-item">
+            <span class="label">Metode Pembayaran:</span>
+            <span class="value">Transfer Bank (BCA)</span>
+          </div>
+
+          <div class="info-item">
+            <span class="label">Bukti Pembayaran:</span>
+            <a href="#" class="view-proof">Lihat Bukti</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="customer-info-section">
+        <h4>Informasi Pelanggan</h4>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Nama:</span>
+            <span class="value">Anita Susanti</span>
+          </div>
+
+          <div class="info-item">
+            <span class="label">Email:</span>
+            <span class="value">anita@example.com</span>
+          </div>
+
+          <div class="info-item">
+            <span class="label">Telepon:</span>
+            <span class="value">08123456789</span>
+          </div>
+
+          <div class="info-item">
+            <span class="label">Alamat:</span>
+            <span class="value"
+              >Jl. Sultan Alimuddin No. 123, Samarinda Seberang</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="order-items-section">
+        <h4>Produk Dipesan</h4>
+        <table class="order-items-table">
+          <thead>
+            <tr>
+              <th>Produk</th>
+              <th>Harga</th>
+              <th>Jumlah</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Produk dalam pesanan -->
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" class="text-right">Subtotal:</td>
+              <td>Rp 200.000</td>
+            </tr>
+            <tr>
+              <td colspan="3" class="text-right">Ongkos Kirim:</td>
+              <td>Rp 15.000</td>
+            </tr>
+            <tr class="total-row">
+              <td colspan="3" class="text-right">Total:</td>
+              <td>Rp 215.000</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="order-actions">
+        <button class="btn-secondary">Cetak Invoice</button>
+        <button class="btn-primary">Kirim Email Konfirmasi</button>
+      </div>
+    </div>
+  </div>
+</div>
