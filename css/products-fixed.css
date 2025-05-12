@@ -1,0 +1,170 @@
+/* CSS untuk tampilan halaman manajemen produk */
+
+/* Menstabilkan tampilan */
+body {
+  overflow-x: hidden;
+}
+
+/* Container untuk tabel */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 20px;
+  /* Mencegah overflow horizontal yang menyebabkan layar bergetar */
+  overflow-y: hidden;
+}
+
+/* Pengaturan tabel */
+.data-table table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* Menstabilkan lebar kolom */
+}
+
+.data-table th,
+.data-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+  word-break: break-word; /* Mencegah overflow teks */
+}
+
+/* Pengaturan lebar kolom */
+.data-table th:nth-child(1), /* ID */
+.data-table td:nth-child(1) {
+  width: 8%;
+}
+
+.data-table th:nth-child(2), /* Gambar */
+.data-table td:nth-child(2) {
+  width: 10%;
+}
+
+.data-table th:nth-child(3), /* Nama Produk */
+.data-table td:nth-child(3) {
+  width: 20%;
+}
+
+.data-table th:nth-child(4), /* Kategori */
+.data-table td:nth-child(4) {
+  width: 15%;
+}
+
+.data-table th:nth-child(5), /* Harga */
+.data-table td:nth-child(5) {
+  width: 12%;
+}
+
+.data-table th:nth-child(6), /* Stok */
+.data-table td:nth-child(6) {
+  width: 8%;
+}
+
+.data-table th:nth-child(7), /* Status */
+.data-table td:nth-child(7) {
+  width: 12%;
+}
+
+.data-table th:nth-child(8), /* Aksi */
+.data-table td:nth-child(8) {
+  width: 15%;
+}
+
+/* Style untuk gambar produk */
+.product-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 5px;
+  object-fit: cover;
+  border: 1px solid #dee2e6;
+}
+
+/* Style untuk status */
+.product-status {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.product-status.active {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #155724;
+}
+
+.product-status.low-stock {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #856404;
+}
+
+.product-status.inactive {
+  background-color: rgba(220, 53, 69, 0.2);
+  color: #721c24;
+}
+
+/* Style untuk container tombol aksi */
+.action-buttons {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
+
+/* Optimasi untuk form upload gambar */
+.image-upload {
+  width: 100%;
+  height: 200px;
+  border: 2px dashed #ced4da;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.image-upload:hover {
+  border-color: #89aaaf;
+  background-color: #e9ecef;
+}
+
+.image-upload i {
+  font-size: 3rem;
+  color: #89aaaf;
+  margin-bottom: 10px;
+}
+
+/* Responsive styling */
+@media (max-width: 991px) {
+  .table-container {
+    margin-left: -10px;
+    margin-right: -10px;
+    width: calc(100% + 20px);
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 767px) {
+  .data-table th,
+  .data-table td {
+    padding: 10px 8px;
+    font-size: 0.85rem;
+  }
+
+  .product-img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .product-status {
+    padding: 3px 6px;
+    font-size: 0.7rem;
+  }
+}

@@ -13,6 +13,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
     />
     <link rel="stylesheet" href="css/admin.css" />
+    <link rel="stylesheet" href="css/products-fixed.css" />
   </head>
   <body>
     <div class="admin-wrapper">
@@ -34,7 +35,7 @@
             </a>
           </li>
           <li class="sidebar-item">
-            <a href="products.html" class="sidebar-link active">
+            <a href="products-fixed.html" class="sidebar-link active">
               <i class="bi bi-box-seam"></i>
               <span>Produk</span>
             </a>
@@ -107,18 +108,14 @@
                 />
                 <button><i class="bi bi-search"></i></button>
               </div>
-              <button
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#addProductModal"
-              >
+              <button class="btn btn-primary" id="btnAddProduct">
                 <i class="bi bi-plus-lg"></i> Tambah Produk
               </button>
             </div>
           </div>
 
-          <div class="table-responsive">
-            <table id="productsTable">
+          <div class="table-container">
+            <table>
               <thead>
                 <tr>
                   <th>ID</th>
@@ -131,8 +128,202 @@
                   <th>Aksi</th>
                 </tr>
               </thead>
-              <tbody>
-                <!-- Data produk akan diisi oleh JavaScript -->
+              <tbody id="productTableBody">
+                <!-- Data statis produk -->
+                <tr>
+                  <td>P001</td>
+                  <td>
+                    <img
+                      src="img/products/p001.jpg"
+                      class="product-img"
+                      alt="Bunga Mawar"
+                      onerror="this.src='img/placeholder.jpg'"
+                    />
+                  </td>
+                  <td>Bunga Mawar</td>
+                  <td>Bunga Potong</td>
+                  <td>Rp 100.000</td>
+                  <td>25</td>
+                  <td><span class="product-status active">Aktif</span></td>
+                  <td>
+                    <div class="action-buttons">
+                      <button
+                        class="btn btn-info btn-sm edit-btn"
+                        data-id="P001"
+                      >
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                      <button
+                        class="btn btn-danger btn-sm delete-btn"
+                        data-id="P001"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>P002</td>
+                  <td>
+                    <img
+                      src="img/products/p002.jpg"
+                      class="product-img"
+                      alt="Bunga Lily"
+                      onerror="this.src='img/placeholder.jpg'"
+                    />
+                  </td>
+                  <td>Bunga Lily</td>
+                  <td>Bunga Potong</td>
+                  <td>Rp 120.000</td>
+                  <td>18</td>
+                  <td><span class="product-status active">Aktif</span></td>
+                  <td>
+                    <div class="action-buttons">
+                      <button
+                        class="btn btn-info btn-sm edit-btn"
+                        data-id="P002"
+                      >
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                      <button
+                        class="btn btn-danger btn-sm delete-btn"
+                        data-id="P002"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>P003</td>
+                  <td>
+                    <img
+                      src="img/products/p003.jpg"
+                      class="product-img"
+                      alt="Bunga Matahari"
+                      onerror="this.src='img/placeholder.jpg'"
+                    />
+                  </td>
+                  <td>Bunga Matahari</td>
+                  <td>Bunga Potong</td>
+                  <td>Rp 95.000</td>
+                  <td>5</td>
+                  <td>
+                    <span class="product-status low-stock">Stok Rendah</span>
+                  </td>
+                  <td>
+                    <div class="action-buttons">
+                      <button
+                        class="btn btn-info btn-sm edit-btn"
+                        data-id="P003"
+                      >
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                      <button
+                        class="btn btn-danger btn-sm delete-btn"
+                        data-id="P003"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>P004</td>
+                  <td>
+                    <img
+                      src="img/products/p004.jpg"
+                      class="product-img"
+                      alt="Bunga Tulip"
+                      onerror="this.src='img/placeholder.jpg'"
+                    />
+                  </td>
+                  <td>Bunga Tulip</td>
+                  <td>Bunga Potong</td>
+                  <td>Rp 150.000</td>
+                  <td>12</td>
+                  <td><span class="product-status active">Aktif</span></td>
+                  <td>
+                    <div class="action-buttons">
+                      <button
+                        class="btn btn-info btn-sm edit-btn"
+                        data-id="P004"
+                      >
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                      <button
+                        class="btn btn-danger btn-sm delete-btn"
+                        data-id="P004"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>P005</td>
+                  <td>
+                    <img
+                      src="img/products/p005.jpg"
+                      class="product-img"
+                      alt="Bunga Anggrek"
+                      onerror="this.src='img/placeholder.jpg'"
+                    />
+                  </td>
+                  <td>Bunga Anggrek</td>
+                  <td>Bunga Pot</td>
+                  <td>Rp 200.000</td>
+                  <td>8</td>
+                  <td><span class="product-status active">Aktif</span></td>
+                  <td>
+                    <div class="action-buttons">
+                      <button
+                        class="btn btn-info btn-sm edit-btn"
+                        data-id="P005"
+                      >
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                      <button
+                        class="btn btn-danger btn-sm delete-btn"
+                        data-id="P005"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>P006</td>
+                  <td>
+                    <img
+                      src="img/products/p006.jpg"
+                      class="product-img"
+                      alt="Bunga Krisan"
+                      onerror="this.src='img/placeholder.jpg'"
+                    />
+                  </td>
+                  <td>Bunga Krisan</td>
+                  <td>Bunga Potong</td>
+                  <td>Rp 85.000</td>
+                  <td>0</td>
+                  <td><span class="product-status inactive">Habis</span></td>
+                  <td>
+                    <div class="action-buttons">
+                      <button
+                        class="btn btn-info btn-sm edit-btn"
+                        data-id="P006"
+                      >
+                        <i class="bi bi-pencil-square"></i>
+                      </button>
+                      <button
+                        class="btn btn-danger btn-sm delete-btn"
+                        data-id="P006"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -278,163 +469,9 @@
       </div>
     </div>
 
-    <!-- Modal Edit Produk -->
-    <div
-      class="modal fade"
-      id="editProductModal"
-      tabindex="-1"
-      aria-labelledby="editProductModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="editProductModalLabel">Edit Produk</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <form id="editProductForm">
-              <input type="hidden" id="editProductId" />
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <div class="mb-3">
-                    <label for="editProductName" class="form-label"
-                      >Nama Produk</label
-                    >
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="editProductName"
-                      required
-                    />
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="mb-3">
-                    <label for="editProductCategory" class="form-label"
-                      >Kategori</label
-                    >
-                    <select
-                      class="form-select"
-                      id="editProductCategory"
-                      required
-                    >
-                      <option value="">Pilih kategori</option>
-                      <option value="bunga_potong">Bunga Potong</option>
-                      <option value="bunga_pot">Bunga Pot</option>
-                      <option value="pot_gantung">Pot Gantung</option>
-                      <option value="pot_rotan">Pot Rotan</option>
-                      <option value="pot_biasa">Pot Biasa</option>
-                      <option value="pot_kaki_besi">Pot Kaki Besi</option>
-                      <option value="aksesoris">Aksesoris</option>
-                      <option value="pot_kayu">Pot Kayu</option>
-                      <option value="pot_keramik">Pot Keramik</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <div class="mb-3">
-                    <label for="editProductPrice" class="form-label"
-                      >Harga (Rp)</label
-                    >
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="editProductPrice"
-                      min="0"
-                      required
-                    />
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="mb-3">
-                    <label for="editProductStock" class="form-label"
-                      >Stok</label
-                    >
-                    <input
-                      type="number"
-                      class="form-control"
-                      id="editProductStock"
-                      min="0"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <label for="editProductDescription" class="form-label"
-                  >Deskripsi Produk</label
-                >
-                <textarea
-                  class="form-control"
-                  id="editProductDescription"
-                  rows="3"
-                ></textarea>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">Gambar Produk</label>
-                <div class="row align-items-center">
-                  <div class="col-md-3">
-                    <img
-                      id="editProductImagePreview"
-                      src=""
-                      alt="Preview"
-                      class="img-fluid rounded"
-                    />
-                  </div>
-                  <div class="col-md-9">
-                    <div class="image-upload" id="editProductImageUpload">
-                      <i class="bi bi-cloud-upload"></i>
-                      <p>Klik atau seret file untuk ganti gambar</p>
-                      <small>PNG, JPG, atau JPEG (Maks. 2MB)</small>
-                    </div>
-                    <input
-                      type="file"
-                      id="editProductImage"
-                      accept="image/*"
-                      style="display: none"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <label for="editProductStatus" class="form-label">Status</label>
-                <select class="form-select" id="editProductStatus">
-                  <option value="active">Aktif</option>
-                  <option value="inactive">Nonaktif</option>
-                </select>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Batal
-            </button>
-            <button type="button" class="btn btn-primary" id="updateProductBtn">
-              Simpan Perubahan
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/admin.js"></script>
-    <script src="js/products.js"></script>
+    <script src="js/products-fixed.js"></script>
   </body>
 </html>

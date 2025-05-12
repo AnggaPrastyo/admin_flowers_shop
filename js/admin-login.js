@@ -84,29 +84,6 @@ function validasiLogin(username, password) {
   return false;
 }
 
-// Inisialisasi akun admin default saat halaman dimuat
-document.addEventListener("DOMContentLoaded", function () {
-  // Inisialisasi akun default
-  buatAkunAdminAwal();
-
-  // Setup form login
-  const formLogin = document.getElementById("form-login-admin");
-  if (formLogin) {
-    formLogin.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const username = document.getElementById("username-admin").value;
-      const password = document.getElementById("password-admin").value;
-
-      if (validasiLogin(username, password)) {
-        window.location.href = "dashboard.html";
-      } else {
-        alert("Username atau password salah");
-      }
-    });
-  }
-});
-
 // Fungsi untuk menambahkan menu admin berdasarkan peran
 function aturMenuAdmin() {
   // Cek apakah pengguna login sebagai superadmin
@@ -133,3 +110,26 @@ function aturMenuAdmin() {
     });
   }
 }
+
+// Inisialisasi akun admin default saat halaman dimuat
+document.addEventListener("DOMContentLoaded", function () {
+  // Inisialisasi akun default
+  buatAkunAdminAwal();
+
+  // Setup form login
+  const formLogin = document.getElementById("form-login-admin");
+  if (formLogin) {
+    formLogin.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const username = document.getElementById("username-admin").value;
+      const password = document.getElementById("password-admin").value;
+
+      if (validasiLogin(username, password)) {
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Username atau password salah");
+      }
+    });
+  }
+});
