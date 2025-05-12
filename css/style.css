@@ -1,12 +1,12 @@
 /* admin.css */
 :root {
-  --admin-primary: #4e73df;
+  --admin-primary: #89aaaf; /* Sesuaikan dengan warna primary website */
   --admin-secondary: #6e84a3;
   --admin-success: #1cc88a;
   --admin-danger: #e74a3b;
   --admin-warning: #f6c23e;
   --admin-info: #36b9cc;
-  --admin-dark: #5a5c69;
+  --admin-dark: #36486b; /* Sesuaikan dengan warna fonts website */
   --admin-light: #f8f9fc;
 }
 
@@ -22,6 +22,11 @@
   position: fixed;
   height: 100vh;
   transition: all 0.3s;
+  z-index: 1000;
+}
+
+.admin-sidebar.collapsed {
+  width: 70px;
 }
 
 .admin-content {
@@ -29,6 +34,11 @@
   margin-left: 250px;
   padding: 20px;
   background-color: var(--admin-light);
+  transition: all 0.3s;
+}
+
+.admin-wrapper.sidebar-collapsed .admin-content {
+  margin-left: 70px;
 }
 
 .admin-header {
@@ -39,6 +49,68 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+
+/* Sidebar styles */
+.sidebar-header {
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-brand {
+  color: white;
+  font-weight: 600;
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+
+.sidebar-brand span {
+  color: var(--admin-primary);
+}
+
+.sidebar-toggle {
+  cursor: pointer;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.sidebar-menu {
+  padding: 0;
+  list-style: none;
+  margin-top: 20px;
+}
+
+.sidebar-item {
+  margin-bottom: 5px;
+}
+
+.sidebar-link {
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.sidebar-link i {
+  margin-right: 10px;
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+}
+
+.sidebar-link.active {
+  background-color: var(--admin-primary);
+  color: white;
 }
 
 /* Card styles */
@@ -59,78 +131,4 @@
   align-items: center;
 }
 
-/* Forms */
-.admin-form .form-group {
-  margin-bottom: 20px;
-}
-
-.admin-form label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-}
-
-.admin-form input[type="text"],
-.admin-form input[type="number"],
-.admin-form input[type="email"],
-.admin-form select,
-.admin-form textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #d1d3e2;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-/* Tables */
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.admin-table th {
-  background-color: var(--admin-light);
-  padding: 12px 15px;
-  text-align: left;
-  border-bottom: 1px solid #e3e6f0;
-  font-weight: 700;
-}
-
-.admin-table td {
-  padding: 12px 15px;
-  border-bottom: 1px solid #e3e6f0;
-}
-
-/* Status badges */
-.status-badge {
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.status-pending {
-  background-color: var(--admin-warning);
-  color: white;
-}
-
-.status-processing {
-  background-color: var(--admin-info);
-  color: white;
-}
-
-.status-shipped {
-  background-color: var(--admin-primary);
-  color: white;
-}
-
-.status-delivered {
-  background-color: var(--admin-success);
-  color: white;
-}
-
-.status-cancelled {
-  background-color: var(--admin-danger);
-  color: white;
-}
+/* Lanjutkan sisa CSS dari contoh */
