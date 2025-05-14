@@ -1,4 +1,16 @@
+// dashboard.js - Logika untuk halaman dashboard
+
 document.addEventListener("DOMContentLoaded", function () {
+  // Inisialisasi grafik
+  initCharts();
+
+  // Muat data pesanan terbaru
+  loadRecentOrders();
+});
+
+// Inisialisasi grafik
+function initCharts() {
+  // Grafik penjualan
   const salesCtx = document.getElementById("salesChart").getContext("2d");
   new Chart(salesCtx, {
     type: "line",
@@ -20,6 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   });
 
+  // Grafik produk terlaris
   const productsCtx = document.getElementById("productsChart").getContext("2d");
   new Chart(productsCtx, {
     type: "doughnut",
@@ -49,31 +62,76 @@ document.addEventListener("DOMContentLoaded", function () {
       maintainAspectRatio: false,
     },
   });
-});
-// Di file dashboard.js
-document.addEventListener("DOMContentLoaded", function () {
-  // Cek apakah user sudah login
-  if (!localStorage.getItem("adminSudahLogin")) {
-    window.location.href = "index.html";
-    return;
-  }
+}
 
-  // Tampilkan informasi admin yang login
-  const adminAktif = JSON.parse(localStorage.getItem("adminAktif") || "{}");
-  const elemenNamaAdmin = document.getElementById("nama-admin");
-  if (elemenNamaAdmin && adminAktif.nama) {
-    elemenNamaAdmin.textContent = adminAktif.nama;
-  }
+// Muat data pesanan terbaru
+function loadRecentOrders() {
+  // Contoh data pesanan (dalam implementasi sebenarnya, ini akan diambil dari localStorage atau API)
+  const recentOrders = [
+    {
+      id: "FS2505001",
+      date: "2025-05-12",
+      customer: "Anita Susanti",
+      total: 215000,
+      status: "pending",
+    },
+    {
+      id: "FS2504212",
+      date: "2025-05-10",
+      customer: "Budi Santoso",
+      total: 350000,
+      status: "processing",
+    },
+    {
+      id: "FS2504210",
+      date: "2025-05-09",
+      customer: "Maya Wijaya",
+      total: 245000,
+      status: "shipped",
+    },
+  ];
 
-  // Setup menu sesuai peran
-  aturMenuAdmin();
+  const ordersTableBody = document.getElementById("recent-orders");
+  if (!ordersTableBody) return;
 
-  // Tambahkan event listener untuk tombol logout
-  document
-    .getElementById("tombol-logout")
-    .addEventListener("click", function () {
-      localStorage.removeItem("adminSudahLogin");
-      localStorage.removeItem("adminAktif");
-      window.location.href = "index.html";
-    });
-});
+  ordersTableBody.innerHTML = "";
+
+  recentOrders.forEach((order) => {
+    const row = document.createElement("tr");
+
+    // Format tanggal
+    const orderDate = new Date(order.date);
+    const formattedDate = formatTanggal(orderDate);
+
+    // Status text
+    const statusText = getStatusText(order.status);
+
+    row.innerHTML = `
+      <td>${order.id}</td>
+      <td>${formattedDate}</td>
+      <td>${order.customer}</td>
+      <td>${formatRupiah(order.total)}</td>
+      <td><span class="status-badge ${order.status}">${statusText}</span></td>
+      <td>
+        <a href="pesanan.html?id=${
+          order.id
+        }" class="btn btn-primary btn-sm">Detail</a>
+      </td>
+    `;
+
+    ordersTableBody.appendChild(row);
+  });
+}
+
+// Mendapatkan teks status pesanan
+function getStatusText(status) {
+  const statusMap = {
+    pending: "Menunggu Pembayaran",
+    processing: "Diproses",
+    shipped: "Dikirim",
+    completed: "Selesai",
+    cancelled: "Dibatalkan",
+  };
+
+  return statusMap[status] || status;
+}

@@ -1,10 +1,6 @@
-/**
- * PERBAIKAN HALAMAN PRODUK ADMIN
- * Silakan ganti seluruh isi file js/products.js dengan kode ini
- * atau buat file baru products-fixed.js dan import di halaman products.html
- */
+// produk.js - Logika untuk halaman manajemen produk
 
-// Data produk default jika localStorage kosong atau rusak
+// Data produk default jika localStorage kosong
 const defaultProducts = [
   {
     id: "P001",
@@ -14,6 +10,7 @@ const defaultProducts = [
     stock: 25,
     status: "active",
     description: "Bunga mawar segar dengan warna merah yang menawan",
+    imageUrl: "img/products/p001.jpg",
   },
   {
     id: "P002",
@@ -23,6 +20,7 @@ const defaultProducts = [
     stock: 18,
     status: "active",
     description: "Bunga lily putih yang elegan dan harum",
+    imageUrl: "img/products/p002.jpg",
   },
   {
     id: "P003",
@@ -32,6 +30,7 @@ const defaultProducts = [
     stock: 5,
     status: "active",
     description: "Bunga matahari segar dengan warna kuning cerah",
+    imageUrl: "img/products/p003.jpg",
   },
   {
     id: "P004",
@@ -41,6 +40,7 @@ const defaultProducts = [
     stock: 12,
     status: "active",
     description: "Bunga tulip impor dengan berbagai pilihan warna",
+    imageUrl: "img/products/p004.jpg",
   },
   {
     id: "P005",
@@ -50,6 +50,7 @@ const defaultProducts = [
     stock: 8,
     status: "active",
     description: "Tanaman anggrek dalam pot yang tahan lama",
+    imageUrl: "img/products/p005.jpg",
   },
   {
     id: "P006",
@@ -59,6 +60,7 @@ const defaultProducts = [
     stock: 0,
     status: "inactive",
     description: "Bunga krisan dengan warna-warni cerah",
+    imageUrl: "img/products/p006.jpg",
   },
 ];
 
@@ -75,96 +77,107 @@ const categoryMap = {
   pot_keramik: "Pot Keramik",
 };
 
+// Variabel untuk menyimpan produk yang akan dihapus
+let productToDelete = null;
+
 // Inisialisasi saat halaman dimuat
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Produk: Halaman dimuat, menyiapkan tampilan...");
+  // Muat produk
+  loadProducts();
 
-  // Periksa login admin
-  checkLoginStatus();
-
-  // Stabilkan tabel untuk mencegah getaran
-  stabilizeTables();
-
-  // Mulai loading dengan sedikit delay untuk memastikan DOM siap
-  setTimeout(() => {
-    console.log("Memuat data produk...");
-    loadProducts();
-    setupEventListeners();
-  }, 100);
+  // Setup event listener
+  setupEventListeners();
 });
 
-// Periksa status login admin
-function checkLoginStatus() {
-  if (!localStorage.getItem("adminSudahLogin")) {
-    console.log("Admin belum login, redirect ke halaman login");
-    window.location.href = "index.html";
-    return false;
+// Muat produk dari localStorage atau gunakan data default
+function loadProducts() {
+  let products = JSON.parse(localStorage.getItem("products"));
+
+  // Jika tidak ada produk di localStorage, gunakan data default
+  if (!products) {
+    products = defaultProducts;
+    localStorage.setItem("products", JSON.stringify(products));
   }
-  return true;
+
+  renderProducts(products);
 }
 
-// Stabilkan tabel produk
-function stabilizeTables() {
-  const tableContainer = document.querySelector(".data-table");
-  if (tableContainer) {
-    tableContainer.style.minHeight = "400px";
-  }
+// Render produk ke tabel
+function renderProducts(products) {
+  const tableBody = document.getElementById("productTableBody");
+  if (!tableBody) return;
 
-  const table = document.getElementById("productsTable");
-  if (table) {
-    table.style.width = "100%";
-    table.style.tableLayout = "fixed";
-  }
+  tableBody.innerHTML = "";
 
-  // Tambahkan CSS untuk mencegah flicker
-  const style = document.createElement("style");
-  style.textContent = `
-    .data-table { min-height: 400px; }
-    #productsTable { width: 100%; table-layout: fixed; }
-    #productsTable tbody td { 
-      vertical-align: middle; 
-      overflow: hidden; 
-      text-overflow: ellipsis;
-      transition: none !important;
+  products.forEach((product) => {
+    // Tentukan status display
+    let statusClass = "active";
+    let statusText = "Aktif";
+
+    if (product.status === "inactive") {
+      statusClass = "inactive";
+      statusText = "Nonaktif";
+    } else if (product.stock <= 5 && product.stock > 0) {
+      statusClass = "low-stock";
+      statusText = "Stok Rendah";
+    } else if (product.stock === 0) {
+      statusClass = "inactive";
+      statusText = "Habis";
     }
-    .action-buttons { display: flex; gap: 5px; justify-content: center; }
-  `;
-  document.head.appendChild(style);
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${product.id}</td>
+      <td>
+        <img src="${product.imageUrl || "img/placeholder.jpg"}" 
+             class="product-img" 
+             alt="${product.name}" 
+             onerror="this.src='img/placeholder.jpg'">
+      </td>
+      <td>${product.name}</td>
+      <td>${getCategoryName(product.category)}</td>
+      <td>${formatRupiah(product.price)}</td>
+      <td>${product.stock}</td>
+      <td><span class="product-status ${statusClass}">${statusText}</span></td>
+      <td>
+        <div class="action-buttons">
+          <button class="btn btn-info btn-sm edit-product" data-id="${
+            product.id
+          }">
+            <i class="bi bi-pencil-square"></i>
+          </button>
+          <button class="btn btn-danger btn-sm delete-product" data-id="${
+            product.id
+          }">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </td>
+    `;
+
+    tableBody.appendChild(row);
+  });
+
+  // Tambahkan event listeners ke tombol aksi
+  addActionButtonsListeners();
 }
 
-// Setup semua event listener
+// Mendapatkan nama kategori dari kode kategori
+function getCategoryName(categoryCode) {
+  return categoryMap[categoryCode] || categoryCode || "Tidak Dikategorikan";
+}
+
+// Tambahkan event listeners
 function setupEventListeners() {
-  // Event untuk tombol Save Product baru
-  const saveProductBtn = document.getElementById("saveProductBtn");
-  if (saveProductBtn) {
-    saveProductBtn.addEventListener("click", function () {
-      addProduct();
-    });
-  }
-
-  // Event untuk tombol Update Product (edit)
-  const updateProductBtn = document.getElementById("updateProductBtn");
-  if (updateProductBtn) {
-    updateProductBtn.addEventListener("click", function () {
-      updateProduct();
-    });
-  }
-
   // Event untuk pencarian produk
-  const searchProduct = document.getElementById("searchProduct");
-  if (searchProduct) {
-    searchProduct.addEventListener("input", function () {
+  const searchInput = document.getElementById("searchProduct");
+  if (searchInput) {
+    searchInput.addEventListener("input", function () {
       filterProducts(this.value);
     });
   }
 
-  // Event untuk upload gambar produk baru
-  setupImageUploadEvents();
-}
-
-// Setup event untuk upload gambar
-function setupImageUploadEvents() {
-  // Upload gambar produk baru
+  // Event untuk modal tambah produk
   const productImageUpload = document.getElementById("productImageUpload");
   const productImage = document.getElementById("productImage");
 
@@ -175,12 +188,12 @@ function setupImageUploadEvents() {
 
     productImage.addEventListener("change", function (e) {
       if (e.target.files[0]) {
-        readImagePreview(e.target.files[0], "productImageUpload");
+        previewImage(e.target.files[0], "productImageUpload");
       }
     });
   }
 
-  // Upload gambar edit produk
+  // Event untuk modal edit produk
   const editProductImageUpload = document.getElementById(
     "editProductImageUpload"
   );
@@ -193,479 +206,287 @@ function setupImageUploadEvents() {
 
     editProductImage.addEventListener("change", function (e) {
       if (e.target.files[0]) {
-        readImagePreview(e.target.files[0], "editProductImagePreview");
+        previewImage(e.target.files[0], "editProductPreview");
+      }
+    });
+  }
+
+  // Event untuk tombol simpan produk
+  const saveProductBtn = document.getElementById("saveProductBtn");
+  if (saveProductBtn) {
+    saveProductBtn.addEventListener("click", addProduct);
+  }
+
+  // Event untuk tombol update produk
+  const updateProductBtn = document.getElementById("updateProductBtn");
+  if (updateProductBtn) {
+    updateProductBtn.addEventListener("click", updateProduct);
+  }
+
+  // Event untuk tombol konfirmasi hapus
+  const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+  if (confirmDeleteBtn) {
+    confirmDeleteBtn.addEventListener("click", function () {
+      if (productToDelete) {
+        deleteProduct(productToDelete);
       }
     });
   }
 }
 
-// Fungsi untuk memuat produk dari localStorage
-function loadProducts() {
-  try {
-    console.log("Mengambil data produk dari localStorage");
-
-    // Coba ambil dari localStorage
-    let products = [];
-
-    try {
-      const storedProducts = localStorage.getItem("products");
-      products = storedProducts ? JSON.parse(storedProducts) : [];
-      console.log(`${products.length} produk ditemukan di localStorage`);
-    } catch (e) {
-      console.error("Error saat parsing produk dari localStorage:", e);
-      products = [];
-    }
-
-    // Jika tidak ada produk, gunakan data default
-    if (!products || !Array.isArray(products) || products.length === 0) {
-      console.log("Tidak ada data produk, menggunakan data default");
-      products = defaultProducts;
-
-      // Simpan data default ke localStorage
-      localStorage.setItem("products", JSON.stringify(products));
-    }
-
-    // Render produk ke tampilan
-    renderProducts(products);
-    return products;
-  } catch (err) {
-    console.error("Error saat memuat produk:", err);
-    showErrorMessage("Terjadi kesalahan saat memuat data produk");
-    return [];
-  }
-}
-
-// Tampilkan pesan error di tabel
-function showErrorMessage(message) {
-  const tbody = document.querySelector("#productsTable tbody");
-  if (tbody) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="8" class="text-center py-4">
-          <div class="alert alert-danger">
-            <i class="bi bi-exclamation-triangle me-2"></i> ${message}
-          </div>
-          <button class="btn btn-primary" onclick="loadProducts()">
-            <i class="bi bi-arrow-clockwise me-2"></i> Coba Lagi
-          </button>
-        </td>
-      </tr>
-    `;
-  }
-}
-
-// Fungsi untuk render produk ke tabel
-function renderProducts(products) {
-  try {
-    console.log("Rendering produk ke tabel...");
-
-    const tbody = document.querySelector("#productsTable tbody");
-    if (!tbody) {
-      console.error("Elemen tbody tidak ditemukan");
-      return;
-    }
-
-    // Kosongkan tbody
-    tbody.innerHTML = "";
-
-    // Jika tidak ada produk, tampilkan pesan
-    if (!products || !Array.isArray(products) || products.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="8" class="text-center py-4">
-            <div class="text-muted">
-              <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-              Tidak ada produk tersedia
-            </div>
-          </td>
-        </tr>
-      `;
-      return;
-    }
-
-    // Loop melalui setiap produk
-    products.forEach((product) => {
-      // Tentukan status dan text
-      let statusClass = "active";
-      let statusText = "Aktif";
-
-      if (product.status === "inactive") {
-        statusClass = "inactive";
-        statusText = "Nonaktif";
-      } else if (product.stock <= 5 && product.stock > 0) {
-        statusClass = "low-stock";
-        statusText = "Stok Rendah";
-      } else if (product.stock === 0) {
-        statusClass = "inactive";
-        statusText = "Habis";
-      }
-
-      // Buat dan tambahkan baris produk
-      const row = document.createElement("tr");
-
-      row.innerHTML = `
-        <td>${product.id || ""}</td>
-        <td>
-          <img 
-            src="img/products/${(product.id || "").toLowerCase()}.jpg" 
-            alt="${product.name || ""}" 
-            class="product-img" 
-            onerror="this.src='img/placeholder.jpg'"
-          >
-        </td>
-        <td>${product.name || ""}</td>
-        <td>${getCategoryName(product.category) || ""}</td>
-        <td>Rp ${(product.price || 0).toLocaleString()}</td>
-        <td>${product.stock || 0}</td>
-        <td>
-          <span class="product-status ${statusClass}">${statusText}</span>
-        </td>
-        <td>
-          <div class="action-buttons">
-            <button class="btn btn-info btn-sm edit-btn" data-id="${
-              product.id
-            }">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-            <button class="btn btn-danger btn-sm delete-btn" data-id="${
-              product.id
-            }">
-              <i class="bi bi-trash"></i>
-            </button>
-          </div>
-        </td>
-      `;
-
-      tbody.appendChild(row);
-    });
-
-    // Tambahkan event listeners untuk tombol edit dan delete
-    addRowButtonListeners();
-  } catch (err) {
-    console.error("Error saat render produk:", err);
-    showErrorMessage("Terjadi kesalahan saat menampilkan data produk");
-  }
-}
-
-// Tambahkan event listeners untuk tombol di setiap baris
-function addRowButtonListeners() {
+// Tambahkan event listeners ke tombol aksi
+function addActionButtonsListeners() {
   // Tombol edit
-  document.querySelectorAll(".edit-btn").forEach((button) => {
+  document.querySelectorAll(".edit-product").forEach((button) => {
     button.addEventListener("click", function () {
-      const id = this.getAttribute("data-id");
-      editProduct(id);
+      const productId = this.getAttribute("data-id");
+      openEditModal(productId);
     });
   });
 
-  // Tombol delete
-  document.querySelectorAll(".delete-btn").forEach((button) => {
+  // Tombol hapus
+  document.querySelectorAll(".delete-product").forEach((button) => {
     button.addEventListener("click", function () {
-      const id = this.getAttribute("data-id");
-      deleteProduct(id);
+      const productId = this.getAttribute("data-id");
+      openDeleteConfirmModal(productId);
     });
   });
 }
 
-// Fungsi untuk mendapatkan nama kategori
-function getCategoryName(categoryKey) {
-  return categoryMap[categoryKey] || categoryKey || "Tidak Dikategorikan";
-}
-
-// Fungsi untuk menambah produk baru
-function addProduct() {
-  try {
-    console.log("Menambahkan produk baru...");
-
-    // Ambil nilai dari form
-    const productName = document.getElementById("productName")?.value;
-    const productCategory = document.getElementById("productCategory")?.value;
-    const productPrice = parseInt(
-      document.getElementById("productPrice")?.value
-    );
-    const productStock = parseInt(
-      document.getElementById("productStock")?.value
-    );
-    const productDescription =
-      document.getElementById("productDescription")?.value;
-    const productStatus = document.getElementById("productStatus")?.value;
-
-    // Validasi input
-    if (
-      !productName ||
-      !productCategory ||
-      isNaN(productPrice) ||
-      isNaN(productStock)
-    ) {
-      alert("Mohon isi semua field yang diperlukan");
-      return;
-    }
-
-    // Ambil produk yang ada
-    const products = JSON.parse(localStorage.getItem("products")) || [];
-
-    // Buat ID baru
-    const lastId =
-      products.length > 0 ? products[products.length - 1].id : "P000";
-    const idNumber = parseInt(lastId.substr(1)) + 1;
-    const newId = "P" + idNumber.toString().padStart(3, "0");
-
-    // Buat objek produk baru
-    const newProduct = {
-      id: newId,
-      name: productName,
-      category: productCategory,
-      price: productPrice,
-      stock: productStock,
-      description: productDescription || "",
-      status: productStatus || "active",
-    };
-
-    // Tambahkan ke array produk
-    products.push(newProduct);
-
-    // Simpan kembali ke localStorage
-    localStorage.setItem("products", JSON.stringify(products));
-
-    // Render produk kembali
-    renderProducts(products);
-
-    // Tutup modal
-    const modal = bootstrap.Modal.getInstance(
-      document.getElementById("addProductModal")
-    );
-    if (modal) {
-      modal.hide();
-    }
-
-    // Reset form
-    document.getElementById("addProductForm")?.reset();
-
-    // Tampilkan pesan sukses
-    alert("Produk berhasil ditambahkan");
-  } catch (err) {
-    console.error("Error saat menambah produk:", err);
-    alert("Terjadi kesalahan saat menambahkan produk");
-  }
-}
-
-// Fungsi untuk mengedit produk
-function editProduct(id) {
-  try {
-    console.log(`Mengedit produk dengan ID: ${id}`);
-
-    // Ambil produk dari localStorage
-    const products = JSON.parse(localStorage.getItem("products")) || [];
-    const product = products.find((p) => p.id === id);
-
-    if (!product) {
-      console.error(`Produk dengan ID ${id} tidak ditemukan`);
-      return;
-    }
-
-    // Isi form dengan data produk
-    document.getElementById("editProductId").value = product.id;
-    document.getElementById("editProductName").value = product.name || "";
-    document.getElementById("editProductCategory").value =
-      product.category || "";
-    document.getElementById("editProductPrice").value = product.price || 0;
-    document.getElementById("editProductStock").value = product.stock || 0;
-    document.getElementById("editProductDescription").value =
-      product.description || "";
-    document.getElementById("editProductStatus").value =
-      product.status || "active";
-
-    // Set gambar preview
-    const previewImg = document.getElementById("editProductImagePreview");
-    if (previewImg) {
-      previewImg.src = `img/products/${product.id.toLowerCase()}.jpg`;
-      previewImg.onerror = function () {
-        this.src = "img/placeholder.jpg";
-      };
-    }
-
-    // Tampilkan modal edit
-    const editModal = new bootstrap.Modal(
-      document.getElementById("editProductModal")
-    );
-    editModal.show();
-  } catch (err) {
-    console.error("Error saat mengedit produk:", err);
-    alert("Terjadi kesalahan saat memuat data produk untuk diedit");
-  }
-}
-
-// Fungsi untuk update produk
-function updateProduct() {
-  try {
-    console.log("Menyimpan perubahan produk...");
-
-    // Ambil nilai dari form
-    const productId = document.getElementById("editProductId")?.value;
-    const productName = document.getElementById("editProductName")?.value;
-    const productCategory = document.getElementById(
-      "editProductCategory"
-    )?.value;
-    const productPrice = parseInt(
-      document.getElementById("editProductPrice")?.value
-    );
-    const productStock = parseInt(
-      document.getElementById("editProductStock")?.value
-    );
-    const productDescription = document.getElementById(
-      "editProductDescription"
-    )?.value;
-    const productStatus = document.getElementById("editProductStatus")?.value;
-
-    // Validasi input
-    if (
-      !productId ||
-      !productName ||
-      !productCategory ||
-      isNaN(productPrice) ||
-      isNaN(productStock)
-    ) {
-      alert("Mohon isi semua field yang diperlukan");
-      return;
-    }
-
-    // Ambil produk dari localStorage
-    let products = JSON.parse(localStorage.getItem("products")) || [];
-    const productIndex = products.findIndex((p) => p.id === productId);
-
-    if (productIndex === -1) {
-      console.error(`Produk dengan ID ${productId} tidak ditemukan`);
-      return;
-    }
-
-    // Update data produk
-    products[productIndex] = {
-      ...products[productIndex],
-      name: productName,
-      category: productCategory,
-      price: productPrice,
-      stock: productStock,
-      description: productDescription || "",
-      status: productStatus || "active",
-    };
-
-    // Simpan kembali ke localStorage
-    localStorage.setItem("products", JSON.stringify(products));
-
-    // Render produk kembali
-    renderProducts(products);
-
-    // Tutup modal
-    const modal = bootstrap.Modal.getInstance(
-      document.getElementById("editProductModal")
-    );
-    if (modal) {
-      modal.hide();
-    }
-
-    // Tampilkan pesan sukses
-    alert("Produk berhasil diperbarui");
-  } catch (err) {
-    console.error("Error saat update produk:", err);
-    alert("Terjadi kesalahan saat memperbarui produk");
-  }
-}
-
-// Fungsi untuk hapus produk
-function deleteProduct(id) {
-  try {
-    if (confirm("Apakah Anda yakin ingin menghapus produk ini?")) {
-      console.log(`Menghapus produk dengan ID: ${id}`);
-
-      // Ambil produk dari localStorage
-      let products = JSON.parse(localStorage.getItem("products")) || [];
-
-      // Filter produk yang akan dihapus
-      products = products.filter((p) => p.id !== id);
-
-      // Simpan kembali ke localStorage
-      localStorage.setItem("products", JSON.stringify(products));
-
-      // Render produk kembali
-      renderProducts(products);
-
-      // Tampilkan pesan sukses
-      alert("Produk berhasil dihapus");
-    }
-  } catch (err) {
-    console.error("Error saat hapus produk:", err);
-    alert("Terjadi kesalahan saat menghapus produk");
-  }
-}
-
-// Fungsi untuk filter produk
+// Filter produk berdasarkan keyword
 function filterProducts(keyword) {
-  try {
-    console.log(`Memfilter produk dengan keyword: ${keyword}`);
+  if (!keyword || keyword.trim() === "") {
+    loadProducts();
+    return;
+  }
 
-    // Ambil produk dari localStorage
-    const products = JSON.parse(localStorage.getItem("products")) || [];
+  const products = JSON.parse(localStorage.getItem("products"));
 
-    // Jika tidak ada keyword, tampilkan semua produk
-    if (!keyword) {
-      renderProducts(products);
-      return;
-    }
-
-    // Filter produk berdasarkan keyword
-    const keywordLower = keyword.toLowerCase();
-    const filteredProducts = products.filter(
-      (product) =>
-        (product.name && product.name.toLowerCase().includes(keywordLower)) ||
-        (product.id && product.id.toLowerCase().includes(keywordLower)) ||
-        (product.category &&
-          getCategoryName(product.category)
-            .toLowerCase()
-            .includes(keywordLower))
+  const filteredProducts = products.filter((product) => {
+    const searchString = keyword.toLowerCase();
+    return (
+      product.id.toLowerCase().includes(searchString) ||
+      product.name.toLowerCase().includes(searchString) ||
+      getCategoryName(product.category).toLowerCase().includes(searchString)
     );
+  });
 
-    // Render produk yang difilter
-    renderProducts(filteredProducts);
-  } catch (err) {
-    console.error("Error saat filter produk:", err);
-    showErrorMessage("Terjadi kesalahan saat memfilter produk");
-  }
+  renderProducts(filteredProducts);
 }
 
-// Fungsi untuk preview gambar
-function readImagePreview(file, elementId) {
-  try {
-    const reader = new FileReader();
+// Preview gambar
+function previewImage(file, elementId) {
+  const reader = new FileReader();
 
-    reader.onload = function (e) {
-      if (elementId === "productImageUpload") {
-        const imageUpload = document.getElementById(elementId);
-        if (imageUpload) {
-          imageUpload.innerHTML = "";
+  reader.onload = function (e) {
+    if (elementId === "productImageUpload") {
+      // Untuk modal tambah
+      const imageContainer = document.getElementById(elementId);
+      imageContainer.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 180px;">`;
+    } else if (elementId === "editProductPreview") {
+      // Untuk modal edit
+      document.getElementById(elementId).src = e.target.result;
+    }
+  };
 
-          const img = document.createElement("img");
-          img.src = e.target.result;
-          img.alt = "Preview";
-          img.style.maxWidth = "100%";
-          img.style.maxHeight = "185px";
+  reader.readAsDataURL(file);
+}
 
-          imageUpload.appendChild(img);
-        }
-      } else {
-        const imagePreview = document.getElementById(elementId);
-        if (imagePreview) {
-          imagePreview.src = e.target.result;
-        }
-      }
+// Buka modal edit
+function openEditModal(productId) {
+  const products = JSON.parse(localStorage.getItem("products"));
+  const product = products.find((p) => p.id === productId);
+
+  if (!product) return;
+
+  // Isi form dengan data produk
+  document.getElementById("editProductId").value = product.id;
+  document.getElementById("editProductName").value = product.name;
+  document.getElementById("editProductCategory").value = product.category;
+  document.getElementById("editProductPrice").value = product.price;
+  document.getElementById("editProductStock").value = product.stock;
+  document.getElementById("editProductDescription").value =
+    product.description || "";
+  document.getElementById("editProductStatus").value = product.status;
+
+  // Tampilkan gambar produk
+  const productPreview = document.getElementById("editProductPreview");
+  if (productPreview) {
+    productPreview.src = product.imageUrl || "img/placeholder.jpg";
+    productPreview.onerror = function () {
+      this.src = "img/placeholder.jpg";
     };
-
-    reader.readAsDataURL(file);
-  } catch (err) {
-    console.error("Error saat membaca preview gambar:", err);
   }
+
+  // Buka modal
+  const editModal = new bootstrap.Modal(
+    document.getElementById("editProductModal")
+  );
+  editModal.show();
 }
 
-// Ekspos fungsi ke global scope untuk bisa dipanggil dari HTML
-window.loadProducts = loadProducts;
-window.editProduct = editProduct;
-window.deleteProduct = deleteProduct;
-window.filterProducts = filterProducts;
+// Buka modal konfirmasi hapus
+function openDeleteConfirmModal(productId) {
+  const products = JSON.parse(localStorage.getItem("products"));
+  const product = products.find((p) => p.id === productId);
+
+  if (!product) return;
+
+  // Simpan ID produk yang akan dihapus
+  productToDelete = productId;
+
+  // Tampilkan nama produk di modal
+  document.getElementById("deleteProductName").textContent = product.name;
+
+  // Buka modal
+  const deleteModal = new bootstrap.Modal(
+    document.getElementById("deleteConfirmModal")
+  );
+  deleteModal.show();
+}
+
+// Tambah produk baru
+function addProduct() {
+  // Validasi form
+  const productName = document.getElementById("productName").value;
+  const productCategory = document.getElementById("productCategory").value;
+  const productPrice = document.getElementById("productPrice").value;
+  const productStock = document.getElementById("productStock").value;
+
+  if (!productName || !productCategory || !productPrice || !productStock) {
+    alert("Mohon lengkapi semua field yang diperlukan");
+    return;
+  }
+
+  // Ambil produk dari localStorage
+  const products = JSON.parse(localStorage.getItem("products"));
+
+  // Buat ID baru
+  const lastId =
+    products.length > 0 ? products[products.length - 1].id : "P000";
+  const newId =
+    "P" + (parseInt(lastId.substring(1)) + 1).toString().padStart(3, "0");
+
+  // Buat objek produk baru
+  const newProduct = {
+    id: newId,
+    name: productName,
+    category: productCategory,
+    price: parseInt(productPrice),
+    stock: parseInt(productStock),
+    description: document.getElementById("productDescription").value,
+    status: document.getElementById("productStatus").value,
+    imageUrl: "img/placeholder.jpg", // Default gambar
+  };
+
+  // Tambahkan produk baru ke array
+  products.push(newProduct);
+
+  // Simpan ke localStorage
+  localStorage.setItem("products", JSON.stringify(products));
+
+  // Reload tampilan
+  renderProducts(products);
+
+  // Tutup modal
+  const modal = bootstrap.Modal.getInstance(
+    document.getElementById("addProductModal")
+  );
+  modal.hide();
+
+  // Reset form
+  document.getElementById("addProductForm").reset();
+  document.getElementById("productImageUpload").innerHTML = `
+    <i class="bi bi-cloud-upload"></i>
+    <p>Klik atau seret file untuk upload</p>
+    <small>PNG, JPG, atau JPEG (Maks. 2MB)</small>
+  `;
+
+  // Tampilkan notifikasi
+  alert("Produk berhasil ditambahkan!");
+}
+
+// Update produk
+function updateProduct() {
+  // Validasi form
+  const productId = document.getElementById("editProductId").value;
+  const productName = document.getElementById("editProductName").value;
+  const productCategory = document.getElementById("editProductCategory").value;
+  const productPrice = document.getElementById("editProductPrice").value;
+  const productStock = document.getElementById("editProductStock").value;
+
+  if (
+    !productId ||
+    !productName ||
+    !productCategory ||
+    !productPrice ||
+    !productStock
+  ) {
+    alert("Mohon lengkapi semua field yang diperlukan");
+    return;
+  }
+
+  // Ambil produk dari localStorage
+  let products = JSON.parse(localStorage.getItem("products"));
+
+  // Cari index produk yang akan diupdate
+  const productIndex = products.findIndex((p) => p.id === productId);
+
+  if (productIndex === -1) {
+    alert("Produk tidak ditemukan");
+    return;
+  }
+
+  // Update produk
+  products[productIndex] = {
+    ...products[productIndex],
+    name: productName,
+    category: productCategory,
+    price: parseInt(productPrice),
+    stock: parseInt(productStock),
+    description: document.getElementById("editProductDescription").value,
+    status: document.getElementById("editProductStatus").value,
+  };
+
+  // Simpan ke localStorage
+  localStorage.setItem("products", JSON.stringify(products));
+
+  // Reload tampilan
+  renderProducts(products);
+
+  // Tutup modal
+  const modal = bootstrap.Modal.getInstance(
+    document.getElementById("editProductModal")
+  );
+  modal.hide();
+
+  // Tampilkan notifikasi
+  alert("Produk berhasil diperbarui!");
+}
+
+// Hapus produk
+function deleteProduct(productId) {
+  // Ambil produk dari localStorage
+  let products = JSON.parse(localStorage.getItem("products"));
+
+  // Filter produk yang akan dihapus
+  products = products.filter((p) => p.id !== productId);
+
+  // Simpan ke localStorage
+  localStorage.setItem("products", JSON.stringify(products));
+
+  // Reload tampilan
+  renderProducts(products);
+
+  // Tutup modal
+  const modal = bootstrap.Modal.getInstance(
+    document.getElementById("deleteConfirmModal")
+  );
+  modal.hide();
+
+  // Reset variabel
+  productToDelete = null;
+
+  // Tampilkan notifikasi
+  alert("Produk berhasil dihapus!");
+}

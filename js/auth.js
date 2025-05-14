@@ -1,65 +1,48 @@
-// File baru: js/auth.js
-document.addEventListener("DOMContentLoaded", function () {
-  // Inisialisasi akun default jika belum ada
-  initDefaultAccounts();
+// auth.js - Fungsi autentikasi dan login
 
-  // Setup form login
-  const loginForm = document.getElementById("admin-login-form");
-  if (loginForm) {
-    loginForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const username = document.getElementById("admin-username").value;
-      const password = document.getElementById("admin-password").value;
-
-      if (validateLogin(username, password)) {
-        window.location.href = "dashboard.html";
-      } else {
-        // Tampilkan pesan error dengan lebih baik
-        showLoginError("Username atau password salah");
-      }
-    });
-  }
-});
-
+// Inisialisasi akun default
 function initDefaultAccounts() {
   if (!localStorage.getItem("daftarAkunAdmin")) {
     const defaultAccounts = [
       {
         username: "admin",
         password: "123",
-        role: "superadmin",
-        name: "Administrator Utama",
+        peran: "superadmin",
+        nama: "Administrator Utama",
       },
       {
         username: "manajer",
         password: "123",
-        role: "manajer",
-        name: "Manajer Toko",
+        peran: "manajer",
+        nama: "Manajer Toko",
       },
       {
         username: "staff",
         password: "123",
-        role: "staff",
-        name: "Staff Operasional",
+        peran: "staff",
+        nama: "Staff Operasional",
       },
     ];
+
     localStorage.setItem("daftarAkunAdmin", JSON.stringify(defaultAccounts));
+    console.log("Akun default berhasil dibuat");
   }
 }
 
-function validateLogin(username, password) {
+// Validasi login admin
+function validateAdminLogin(username, password) {
   const accounts = JSON.parse(localStorage.getItem("daftarAkunAdmin") || "[]");
-  const matchedAccount = accounts.find(
-    (account) => account.username === username && account.password === password
+  const account = accounts.find(
+    (acc) => acc.username === username && acc.password === password
   );
 
-  if (matchedAccount) {
+  if (account) {
+    // Simpan info login (tanpa password)
     const loginInfo = {
-      username: matchedAccount.username,
-      role: matchedAccount.role,
-      name: matchedAccount.name,
-      loginTime: new Date().toISOString(),
+      username: account.username,
+      peran: account.peran,
+      nama: account.nama,
+      waktuLogin: new Date().toISOString(),
     };
 
     localStorage.setItem("adminSudahLogin", "true");
@@ -70,42 +53,53 @@ function validateLogin(username, password) {
   return false;
 }
 
+// Tampilkan pesan error login
 function showLoginError(message) {
-  // Buat atau update elemen untuk menampilkan pesan error
-  let errorDiv = document.getElementById("login-error");
-  if (!errorDiv) {
-    errorDiv = document.createElement("div");
-    errorDiv.id = "login-error";
-    errorDiv.className = "alert alert-danger mt-3";
+  const errorElement = document.getElementById("login-error");
 
-    const loginForm = document.getElementById("admin-login-form");
-    loginForm.insertAdjacentElement("beforebegin", errorDiv);
+  if (!errorElement) {
+    const loginForm = document.getElementById("form-login-admin");
+    if (!loginForm) return;
+
+    const newErrorElement = document.createElement("div");
+    newErrorElement.id = "login-error";
+    newErrorElement.className = "alert alert-danger mt-3";
+    loginForm.parentNode.insertBefore(newErrorElement, loginForm);
+
+    newErrorElement.textContent = message;
+  } else {
+    errorElement.textContent = message;
+    errorElement.style.display = "block";
   }
 
-  errorDiv.textContent = message;
-  errorDiv.style.display = "block";
-
-  // Hilangkan pesan error setelah 3 detik
+  // Hilangkan pesan setelah 3 detik
   setTimeout(() => {
-    errorDiv.style.display = "none";
+    const currentErrorElement = document.getElementById("login-error");
+    if (currentErrorElement) {
+      currentErrorElement.style.display = "none";
+    }
   }, 3000);
 }
-// Tambahkan ini di auth.js
+
+// Setup form login
 document.addEventListener("DOMContentLoaded", function () {
-  // Inisialisasi validasi form
-  if (document.getElementById("admin-login-form")) {
-    const validator = new FormValidator("admin-login-form");
+  // Inisialisasi akun default
+  initDefaultAccounts();
 
-    document
-      .getElementById("admin-login-form")
-      .addEventListener("form:valid", function (e) {
-        const formData = e.detail;
+  // Setup form login
+  const loginForm = document.getElementById("form-login-admin");
+  if (loginForm) {
+    loginForm.addEventListener("submit", function (e) {
+      e.preventDefault();
 
-        if (validateLogin(formData.adminUsername, formData.adminPassword)) {
-          window.location.href = "dashboard.html";
-        } else {
-          showLoginError("Username atau password salah");
-        }
-      });
+      const username = document.getElementById("username-admin").value;
+      const password = document.getElementById("password-admin").value;
+
+      if (validateAdminLogin(username, password)) {
+        window.location.href = "dashboard.html";
+      } else {
+        showLoginError("Username atau password salah");
+      }
+    });
   }
 });

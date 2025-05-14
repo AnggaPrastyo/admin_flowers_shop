@@ -17,6 +17,7 @@ body {
   background-color: var(--bg-light);
 }
 
+/* Sidebar */
 .sidebar {
   position: fixed;
   top: 0;
@@ -81,6 +82,7 @@ body {
   text-align: center;
 }
 
+/* Main Content */
 .main-content {
   margin-left: 250px;
   padding: 20px;
@@ -141,6 +143,7 @@ body {
   margin-right: 10px;
 }
 
+/* Stat Cards */
 .stat-card {
   background-color: white;
   border-radius: 8px;
@@ -205,6 +208,7 @@ body {
   color: var(--danger);
 }
 
+/* Chart Container */
 .chart-container {
   background-color: white;
   border-radius: 8px;
@@ -227,6 +231,7 @@ body {
   margin: 0;
 }
 
+/* Data Table */
 .data-table {
   background-color: white;
   border-radius: 8px;
@@ -277,36 +282,7 @@ body {
   color: var(--font-light);
 }
 
-.data-table table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.data-table th {
-  padding: 15px 20px;
-  text-align: left;
-  color: var(--font-dark);
-  font-weight: 600;
-  border-bottom: 1px solid var(--bg-light);
-}
-
-.data-table td {
-  padding: 15px 20px;
-  vertical-align: middle;
-  border-bottom: 1px solid var(--bg-light);
-}
-
-.data-table tr:last-child td {
-  border-bottom: none;
-}
-
-.product-img {
-  width: 60px;
-  height: 60px;
-  border-radius: 5px;
-  object-fit: cover;
-}
-
+/* Status Badges */
 .status-badge {
   padding: 5px 10px;
   border-radius: 30px;
@@ -339,6 +315,7 @@ body {
   color: #721c24;
 }
 
+/* Product Status */
 .product-status {
   padding: 5px 10px;
   border-radius: 30px;
@@ -361,6 +338,7 @@ body {
   color: #856404;
 }
 
+/* Filter Bar */
 .filter-bar {
   background-color: white;
   padding: 15px 20px;
@@ -388,34 +366,7 @@ body {
   flex-wrap: wrap;
 }
 
-.image-upload {
-  width: 100%;
-  height: 200px;
-  border: 2px dashed #ced4da;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.image-upload i {
-  font-size: 3rem;
-  color: var(--font-light);
-  margin-bottom: 10px;
-}
-
-.image-upload p {
-  color: var(--font-light);
-  margin: 0;
-}
-
-.image-upload small {
-  color: var(--font-light);
-  font-size: 0.8rem;
-}
-
+/* Buttons */
 .btn-primary {
   background-color: var(--primary);
   border-color: var(--primary);
@@ -426,6 +377,7 @@ body {
   border-color: var(--primary-dark);
 }
 
+/* Responsive */
 @media (max-width: 991px) {
   .sidebar {
     width: 70px;
@@ -463,30 +415,4 @@ body {
   .search-box {
     width: 100%;
   }
-}
-body {
-  background-color: var(--bg-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-}
-.login-container {
-  width: 100%;
-  max-width: 400px;
-  padding: 2rem;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-.login-logo {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-.login-logo h2 {
-  color: var(--primary);
-  font-weight: 600;
-}
-.login-logo h2 span {
-  color: var(--font-dark);
 }

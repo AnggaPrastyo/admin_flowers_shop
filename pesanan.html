@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manajemen Pesanan - Flowers Shop</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="css/admin.css" />
+    <link rel="stylesheet" href="css/tabel.css" />
+  </head>
+  <body data-page="pesanan">
+    <div class="admin-wrapper">
+      <!-- Sidebar akan dimuat secara dinamis di sini -->
+      <div id="sidebar-container"></div>
+
+      <div class="main-content">
+        <header class="header">
+          <h1>Manajemen Pesanan</h1>
+
+          <div class="header-actions">
+            <div class="notification-icon">
+              <i class="bi bi-bell fs-4"></i>
+              <span class="notification-badge">3</span>
+            </div>
+
+            <div class="admin-profile">
+              <img src="img/admin-avatar.jpg" alt="Admin" />
+              <span id="nama-admin">Admin</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Filter -->
+        <div class="filter-bar">
+          <div class="filter-section">
+            <select id="orderStatusFilter" class="form-select">
+              <option value="all">Semua Status</option>
+              <option value="pending">Menunggu Pembayaran</option>
+              <option value="processing">Diproses</option>
+              <option value="shipped">Dikirim</option>
+              <option value="completed">Selesai</option>
+              <option value="cancelled">Dibatalkan</option>
+            </select>
+
+            <div class="daterange-picker">
+              <input type="date" id="dateFrom" class="form-control" />
+              <span>hingga</span>
+              <input type="date" id="dateTo" class="form-control" />
+              <button id="filterDate" class="btn btn-primary btn-sm">
+                Terapkan
+              </button>
+            </div>
+          </div>
+
+          <div class="search-box">
+            <input type="text" id="searchOrder" placeholder="Cari pesanan..." />
+            <button><i class="bi bi-search"></i></button>
+          </div>
+        </div>
+
+        <!-- Tabel Pesanan -->
+        <div class="data-table">
+          <div class="table-header">
+            <h2 class="table-title">Daftar Pesanan</h2>
+          </div>
+
+          <div class="table-responsive">
+            <table id="ordersTable">
+              <thead>
+                <tr>
+                  <th>ID Pesanan</th>
+                  <th>Tanggal</th>
+                  <th>Pelanggan</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Pembayaran</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody">
+                <!-- Data pesanan akan dimuat oleh JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Detail Pesanan -->
+    <div
+      class="modal fade"
+      id="orderDetailModal"
+      tabindex="-1"
+      aria-labelledby="orderDetailModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="orderDetailModalLabel">
+              Detail Pesanan #<span id="orderIdDetail"></span>
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <h6>Informasi Pesanan</h6>
+                <table class="table table-borderless">
+                  <tr>
+                    <td>ID Pesanan</td>
+                    <td>: <span id="orderIdInfo"></span></td>
+                  </tr>
+                  <tr>
+                    <td>Tanggal</td>
+                    <td>: <span id="orderDateInfo"></span></td>
+                  </tr>
+                  <tr>
+                    <td>Status</td>
+                    <td>
+                      <div class="input-group">
+                        <select id="orderStatusSelect" class="form-select">
+                          <option value="pending">Menunggu Pembayaran</option>
+                          <option value="processing">Diproses</option>
+                          <option value="shipped">Dikirim</option>
+                          <option value="completed">Selesai</option>
+                          <option value="cancelled">Dibatalkan</option>
+                        </select>
+                        <button class="btn btn-primary" id="updateStatusBtn">
+                          Update
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <h6>Informasi Pelanggan</h6>
+                <table class="table table-borderless">
+                  <tr>
+                    <td>Nama</td>
+                    <td>: <span id="customerNameInfo"></span></td>
+                  </tr>
+                  <tr>
+                    <td>Email</td>
+                    <td>: <span id="customerEmailInfo"></span></td>
+                  </tr>
+                  <tr>
+                    <td>Telepon</td>
+                    <td>: <span id="customerPhoneInfo"></span></td>
+                  </tr>
+                  <tr>
+                    <td>Alamat</td>
+                    <td>: <span id="customerAddressInfo"></span></td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            <h6>Detail Produk</h6>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Produk</th>
+                    <th>Harga</th>
+                    <th>Jumlah</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody id="orderItemsList">
+                  <!-- Data produk dalam pesanan akan dimuat oleh JS -->
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="3" class="text-end">Subtotal:</td>
+                    <td id="orderSubtotal"></td>
+                  </tr>
+                  <tr>
+                    <td colspan="3" class="text-end">Ongkos Kirim:</td>
+                    <td id="orderShipping"></td>
+                  </tr>
+                  <tr class="fw-bold">
+                    <td colspan="3" class="text-end">Total:</td>
+                    <td id="orderTotal"></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <h6>Informasi Pembayaran</h6>
+                <table class="table table-borderless">
+                  <tr>
+                    <td>Metode</td>
+                    <td>: <span id="paymentMethodInfo"></span></td>
+                  </tr>
+                  <tr>
+                    <td>Status</td>
+                    <td>: <span id="paymentStatusInfo"></span></td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <h6>Bukti Pembayaran</h6>
+                <div class="text-center">
+                  <img
+                    id="paymentProofImg"
+                    src="img/placeholder.jpg"
+                    alt="Bukti Pembayaran"
+                    class="img-fluid rounded"
+                    style="max-height: 200px"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Tutup
+            </button>
+            <button type="button" class="btn btn-primary" id="printInvoiceBtn">
+              Cetak Invoice
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/bantuan.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/pesanan.js"></script>
+  </body>
+</html>
