@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laporan & Analytics - Flowers Shop</title>
+
+    <!-- CSS Files -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="css/admin.css" />
+
+    <!-- FIXED: Optimize chart.js loading -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+    <!-- FIXED: Custom CSS for chart sizing -->
+    <style>
+      .chart-container {
+        position: relative;
+        height: 300px !important; /* Fixed height */
+        margin-bottom: 20px;
+      }
+
+      .chart-canvas {
+        max-height: 280px !important;
+        width: 100% !important;
+      }
+
+      /* Prevent auto-scroll issues */
+      html,
+      body {
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+      }
+
+      /* Optimize table rendering */
+      .data-table {
+        contain: layout style;
+      }
+
+      /* Reduce animations to prevent flickering */
+      * {
+        animation-duration: 0.01ms !important;
+        animation-delay: -0.01ms !important;
+        animation-iteration-count: 1 !important;
+        background-attachment: initial !important;
+        scroll-behavior: auto !important;
+      }
+
+      .financial-item {
+        padding: 15px;
+        text-align: center;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+
+  <body data-page="laporan">
+    <div class="admin-wrapper">
+      <!-- Sidebar Container -->
+      <div id="sidebar-container"></div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Header -->
+        <header class="header">
+          <h1>Laporan & Analytics</h1>
+          <div class="header-actions">
+            <div class="notification-icon">
+              <i class="bi bi-bell fs-4"></i>
+              <span class="notification-badge">3</span>
+            </div>
+            <div class="admin-profile">
+              <img src="img/admin-avatar.jpg" alt="Admin" />
+              <span id="nama-admin">Admin</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="filter-section">
+            <select id="reportPeriod" class="form-select">
+              <option value="today">Hari Ini</option>
+              <option value="week">Minggu Ini</option>
+              <option value="month" selected>Bulan Ini</option>
+              <option value="year">Tahun Ini</option>
+            </select>
+          </div>
+
+          <div class="filter-section">
+            <button class="btn btn-primary btn-sm" id="generateReport">
+              <i class="bi bi-graph-up"></i> Generate Report
+            </button>
+            <button class="btn btn-success btn-sm" id="exportReport">
+              <i class="bi bi-download"></i> Export
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Stats Cards -->
+        <div class="row mb-4">
+          <div class="col-xl-3 col-md-6 mb-3">
+            <div class="stat-card primary">
+              <div>
+                <div class="stat-value" id="totalRevenue">Rp 0</div>
+                <div class="stat-label">Total Pendapatan</div>
+                <div class="stat-trend up">
+                  <i class="bi bi-arrow-up"></i> <span>12%</span>
+                </div>
+              </div>
+              <div class="icon">
+                <i class="bi bi-currency-dollar"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-3 col-md-6 mb-3">
+            <div class="stat-card success">
+              <div>
+                <div class="stat-value" id="totalOrders">0</div>
+                <div class="stat-label">Total Pesanan</div>
+                <div class="stat-trend up">
+                  <i class="bi bi-arrow-up"></i> <span>8%</span>
+                </div>
+              </div>
+              <div class="icon">
+                <i class="bi bi-cart3"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-3 col-md-6 mb-3">
+            <div class="stat-card warning">
+              <div>
+                <div class="stat-value" id="avgOrderValue">Rp 0</div>
+                <div class="stat-label">Rata-rata Order</div>
+                <div class="stat-trend up">
+                  <i class="bi bi-arrow-up"></i> <span>5%</span>
+                </div>
+              </div>
+              <div class="icon">
+                <i class="bi bi-bag-check"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-3 col-md-6 mb-3">
+            <div class="stat-card info">
+              <div>
+                <div class="stat-value" id="newCustomers">0</div>
+                <div class="stat-label">Customer Baru</div>
+                <div class="stat-trend down">
+                  <i class="bi bi-arrow-down"></i> <span>3%</span>
+                </div>
+              </div>
+              <div class="icon">
+                <i class="bi bi-person-plus"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FIXED: Charts with proper sizing -->
+        <div class="row mb-4">
+          <!-- Sales Chart -->
+          <div class="col-md-8">
+            <div class="chart-container">
+              <div class="chart-header">
+                <h2 class="chart-title">Tren Penjualan</h2>
+                <div class="chart-actions">
+                  <button
+                    class="btn btn-sm btn-outline-secondary"
+                    data-chart="daily"
+                  >
+                    Harian
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-secondary active"
+                    data-chart="weekly"
+                  >
+                    Mingguan
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-secondary"
+                    data-chart="monthly"
+                  >
+                    Bulanan
+                  </button>
+                </div>
+              </div>
+              <div style="height: 250px; position: relative">
+                <canvas id="salesTrendChart" class="chart-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Products -->
+          <div class="col-md-4">
+            <div class="chart-container">
+              <div class="chart-header">
+                <h2 class="chart-title">Produk Terlaris</h2>
+              </div>
+              <div style="height: 250px; position: relative">
+                <canvas id="topProductsChart" class="chart-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Tables Row -->
+        <div class="row mb-4">
+          <!-- Best Selling Products -->
+          <div class="col-md-6">
+            <div class="data-table">
+              <div class="table-header">
+                <h2 class="table-title">Produk Terlaris</h2>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Produk</th>
+                      <th>Terjual</th>
+                      <th>Revenue</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bestProductsBody">
+                    <tr>
+                      <td colspan="4" class="text-center py-3">Loading...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Customers -->
+          <div class="col-md-6">
+            <div class="data-table">
+              <div class="table-header">
+                <h2 class="table-title">Customer Terbaik</h2>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Customer</th>
+                      <th>Orders</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="topCustomersBody">
+                    <tr>
+                      <td colspan="4" class="text-center py-3">Loading...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Geographic & Category Analysis -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="data-table">
+              <div class="table-header">
+                <h2 class="table-title">Analisis Geografis</h2>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Wilayah</th>
+                      <th>Orders</th>
+                      <th>Revenue</th>
+                    </tr>
+                  </thead>
+                  <tbody id="geoAnalysisBody">
+                    <tr>
+                      <td colspan="3" class="text-center py-3">Loading...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="data-table">
+              <div class="table-header">
+                <h2 class="table-title">Performa Kategori</h2>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Kategori</th>
+                      <th>Terjual</th>
+                      <th>Revenue</th>
+                    </tr>
+                  </thead>
+                  <tbody id="categoryBody">
+                    <tr>
+                      <td colspan="3" class="text-center py-3">Loading...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="row">
+          <div class="col-12">
+            <div class="data-table">
+              <div class="table-header">
+                <h2 class="table-title">Ringkasan Keuangan</h2>
+              </div>
+              <div class="row p-3">
+                <div class="col-md-3">
+                  <div class="financial-item">
+                    <h6 class="text-muted mb-2">Gross Revenue</h6>
+                    <h4 class="text-primary mb-0" id="grossRevenue">Rp 0</h4>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="financial-item">
+                    <h6 class="text-muted mb-2">Total Orders</h6>
+                    <h4 class="text-success mb-0" id="financialOrders">0</h4>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="financial-item">
+                    <h6 class="text-muted mb-2">Avg Order</h6>
+                    <h4 class="text-warning mb-0" id="financialAvg">Rp 0</h4>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="financial-item">
+                    <h6 class="text-muted mb-2">Growth Rate</h6>
+                    <h4 class="text-info mb-0" id="growthRate">12.5%</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/bantuan.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/laporan-optimized.js"></script>
+  </body>
+</html>
